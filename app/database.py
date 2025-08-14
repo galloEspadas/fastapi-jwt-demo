@@ -1,8 +1,14 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from motor.motor_asyncio import AsyncIOMotorClient
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./users.db"
+import os
+from dotenv import load_dotenv
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-Base = declarative_base()
+load_dotenv()  
+
+client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
+mongo_db_name = os.getenv("MONGO_DB_NAME")
+
+if not mongo_db_name:
+	raise ValueError("Environment variable MONGO_DB_NAME is not set.")
+
+db = client[mongo_db_name]
